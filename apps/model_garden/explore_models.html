@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GenAI Models Explorer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="main-box" id="main-box">
+        <h1>Explore GenAI Models</h1>
+        <!-- Initially, only this button will be visible -->
+        <button id="next-model-button" onclick="showRandomModel()">Show Random Model</button>
+        
+        <div class="content-container" style="display: none;">
+            <!-- Info Box -->
+            <div id="info-box" class="info-box">
+                <img id="model-icon" class="model-icon" src="" alt="Model Icon">
+                <h2 id="model-name">Model Name</h2>
+                <p id="model-description">Click a model to learn more!</p>
+                <ul id="model-features">
+                    <!-- Model features will appear here -->
+                </ul>
+                <a id="model-link" href="#" target="_blank">Try or Learn More</a>
+                <button onclick="closeInfo()">Close</button>
+            </div>
+            
+            <!-- Model Panel - Initially Hidden -->
+            <div id="model-panel" class="model-panel" style="display: none;">
+                <div class="model-card" onclick="showInfo('gemini')">Gemini</div>
+                <div class="model-card" onclick="showInfo('openai')">OpenAI</div>
+                <div class="model-card" onclick="showInfo('claude')">Claude</div>
+                <div class="model-card" onclick="showInfo('anthropic')">Anthropic</div>
+                <div class="model-card" onclick="showInfo('llama')">LLaMA</div>
+                <div class="model-card" onclick="showInfo('bard')">Bard</div>
+                <div class="model-card" onclick="showInfo('mistral')">Mistral</div>
+                <div class="model-card" onclick="showInfo('palm')">PaLM</div>
+            </div>
+        </div>
+
+        <p id="show-all-text" onclick="toggleModelPanel()" style="display: none;">Show All Models</p>
+
+        <!-- Game Link -->
+        <p id="game-link" onclick="openGame()">
+            <img src="https://img.icons8.com/emoji/48/000000/video-game-emoji.png" alt="Game Icon" class="game-icon">
+            Let's play a little game...
+        </p>
+
+        <!-- Game Iframe Container -->
+        <div id="game-container" class="game-container" style="display: none;">
+            <iframe id="game-iframe" src="" frameborder="0"></iframe>
+            <button id="close-game-button" onclick="closeGame()">Close Game</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

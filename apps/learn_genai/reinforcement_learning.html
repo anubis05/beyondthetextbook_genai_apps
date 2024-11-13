@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reinforcement Learning Interactive App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #e0f7fa;
+      flex-direction: column;
+    }
+    .title-container {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .container {
+      background-color: #ffffff;
+      border-radius: 12px;
+      padding: 20px;
+      max-width: 800px;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      position: relative;
+    }
+    .goal-agent-container {
+      background-color: #f9f9f9;
+      border-radius: 12px;
+      padding: 20px;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 300px;
+    }
+    .controls-container {
+      background-color: #f1f1f1;
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+    }
+    .reset-button {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      padding: 10px;
+      background-color: #ff9800;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background-color 0.3s;
+      z-index: 10;
+    }
+    .reset-button:hover {
+      background-color: #fb8c00;
+    }
+    h1 {
+      color: #0288d1;
+      margin: 0;
+    }
+    .description {
+      margin: 10px 0;
+      color: #333;
+    }
+    .agent {
+      width: 100px;
+      height: 100px;
+      background-color: #4CAF50;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      font-weight: bold;
+      transition: transform 0.3s;
+    }
+    .goal {
+      width: 100px;
+      height: 100px;
+      background-color: #FFD700;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: black;
+      font-weight: bold;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(0, 0);
+    }
+    .feedback-container {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 1.5em;
+    }
+    .feedback {
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    button {
+      padding: 10px 20px;
+      border: none;
+      background-color: #0288d1;
+      color: white;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #0277bd;
+    }
+  </style>
+</head>
+<body>
+  <div class="title-container">
+    <h1>Reinforcement Learning Interactive App</h1>
+    <p class="description">Click on actions to help the agent achieve the goal! Reach the golden circle to get rewarded!</p>
+  </div>
+
+  <div class="container">
+    <button class="reset-button" onclick="resetGoal()">Reset Goal</button>
+    <div class="goal-agent-container">
+      <div id="agent" class="agent">Agent</div>
+      <div id="goal" class="goal">Goal</div>
+    </div>
+    <div class="controls-container">
+      <button onclick="moveAgent('left')">Move Left</button>
+      <button onclick="moveAgent('right')">Move Right</button>
+      <button onclick="moveAgent('up')">Move Up</button>
+      <button onclick="moveAgent('down')">Move Down</button>
+    </div>
+  </div>
+
+  <div class="feedback-container">
+    <div id="feedback" class="feedback"></div>
+  </div>
+
+  <script>
+    const agent = document.getElementById("agent");
+    const goal = document.getElementById("goal");
+    const feedback = document.getElementById("feedback");
+    let position = { x: 0, y: 0 };
+
+    const happyEmojis = ["🎉", "👏", "😁", "😊", "🤩", "👍", "💪"];
+    const sadEmojis = ["😢", "😭", "😞", "😟", "😔", "🙁", "👎"];
+
+    function moveAgent(direction) {
+      const previousPosition = { ...position };
+
+      switch (direction) {
+        case 'left':
+          position.x -= 20;
+          break;
+        case 'right':
+          position.x += 20;
+          break;
+        case 'up':
+          position.y -= 20;
+          break;
+        case 'down':
+          position.y += 20;
+          break;
+      }
+      updateAgentPosition();
+      provideFeedback(previousPosition);
+      checkGoal();
+    }
+
+    function updateAgentPosition() {
+      agent.style.transform = `translate(${position.x}px, ${position.y}px)`;
+    }
+
+    function checkGoal() {
+      const goalPosition = { x: parseInt(goal.style.left), y: parseInt(goal.style.top) };
+      if (position.x === goalPosition.x && position.y === goalPosition.y) {
+        const randomHappyEmoji = happyEmojis[Math.floor(Math.random() * happyEmojis.length)];
+        showFeedback(`${randomHappyEmoji} Goal Reached! Great job!`, "#4CAF50");
+        setTimeout(resetAgent, 1500);
+      }
+    }
+
+    function provideFeedback(previousPosition) {
+      const goalPosition = { x: parseInt(goal.style.left), y: parseInt(goal.style.top) };
+      const previousDistance = Math.sqrt(
+        Math.pow(previousPosition.x - goalPosition.x, 2) +
+        Math.pow(previousPosition.y - goalPosition.y, 2)
+      );
+      const currentDistance = Math.sqrt(
+        Math.pow(position.x - goalPosition.x, 2) +
+        Math.pow(position.y - goalPosition.y, 2)
+      );
+
+      if (currentDistance < previousDistance) {
+        const randomHappyEmoji = happyEmojis[Math.floor(Math.random() * happyEmojis.length)];
+        showFeedback(`${randomHappyEmoji} Getting Closer! Keep Going!`, "#4CAF50");
+      } else if (currentDistance > previousDistance) {
+        const randomSadEmoji = sadEmojis[Math.floor(Math.random() * sadEmojis.length)];
+        showFeedback(`${randomSadEmoji} Moving Away! Try a different direction!`, "#ff6347");
+      }
+    }
+
+    function showFeedback(message, color) {
+      feedback.innerText = message;
+      feedback.style.color = color;
+      feedback.style.opacity = 1;
+      setTimeout(() => {
+        feedback.style.opacity = 0;
+      }, 1000);
+    }
+
+    function resetAgent() {
+      position = { x: 0, y: 0 };
+      updateAgentPosition();
+    }
+
+    function resetGoal() {
+      const containerWidth = document.querySelector('.goal-agent-container').clientWidth;
+      const containerHeight = document.querySelector('.goal-agent-container').clientHeight;
+      const randomX = Math.floor(Math.random() * (containerWidth - 100));
+      const randomY = Math.floor(Math.random() * (containerHeight - 100));
+      goal.style.left = `${randomX}px`;
+      goal.style.top = `${randomY}px`;
+    }
+  </script>
+
+</body>
+</html>

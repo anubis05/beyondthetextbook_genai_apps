@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Let's build a Transformer</title>
+  <link href="https://unpkg.com/material-components-web@13.0.0/dist/material-components-web.min.css" rel="stylesheet">
+  <script src="https://unpkg.com/material-components-web@13.0.0/dist/material-components-web.min.js"></script>
+
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #FAFAFA;
+      color: #202124;
+      margin: 0;
+      padding: 0;
+    }
+
+    h2 {
+      margin-bottom: 16px;
+      font-size: 1.5rem;
+      color: #1E88E5;
+    }
+
+    /* Main container with a light blue background */
+    .main-wrapper {
+      background-color: #E3F2FD;
+      padding: 32px;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    .main-content {
+      display: flex;
+      justify-content: space-between;
+      padding: 24px;
+      gap: 24px;
+    }
+
+    /* Left Container for Input Data Controls */
+    .input-data-container {
+      width: 250px;
+      background-color: #FFFFFF;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 12px;
+      padding: 24px;
+      height: 500px;
+      overflow-y: auto;
+    }
+
+    .input-data-container h2 {
+      font-size: 1.3rem;
+      color: #1E88E5;
+      margin-bottom: 16px;
+    }
+
+    .input-slider {
+      margin-bottom: 16px;
+    }
+
+    .input-slider label {
+      display: block;
+      font-size: 1rem;
+      margin-bottom: 8px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 8px;
+      background: #E0E0E0;
+      border-radius: 5px;
+      outline: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #1E88E5;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #1E88E5;
+      cursor: pointer;
+    }
+
+    .data-visualization {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .data-visualization .data-item {
+      background-color: #E0F7FA;
+      color: #00796B;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      text-align: center;
+      animation: shimmer 1.5s infinite linear;
+      background: linear-gradient(to right, #E0F7FA 20%, #B2EBF2 40%, #E0F7FA 60%);
+      background-size: 200% auto;
+    }
+
+    .data-visualization .error-item {
+      background-color: #FFEBEE;
+      color: #D32F2F;
+      animation: shimmer 1.5s infinite linear;
+      background: linear-gradient(to right, #FFEBEE 20%, #FFCDD2 40%, #FFEBEE 60%);
+      background-size: 200% auto;
+    }
+
+    .data-visualization .noise-item {
+      background-color: #FFF3E0;
+      color: #F57C00;
+      animation: shimmer 1.5s infinite linear;
+      background: linear-gradient(to right, #FFF3E0 20%, #FFE0B2 40%, #FFF3E0 60%);
+      background-size: 200% auto;
+    }
+
+    .data-visualization .gap-item {
+      background-color: #E0E0E0;
+      color: #757575;
+      animation: shimmer 1.5s infinite linear;
+      background: linear-gradient(to right, #E0E0E0 20%, #BDBDBD 40%, #E0E0E0 60%);
+      background-size: 200% auto;
+    }
+
+    /* Transformer Builder and Power-Ups Container */
+    .container {
+      width: 400px;
+      background-color: #FFFFFF;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 12px;
+      padding: 24px;
+      height: 500px;
+      overflow-y: auto;
+    }
+
+    .data-flow {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 8px 16px;
+      margin: 16px 0;
+      border-radius: 24px;
+      font-size: 1rem;
+      font-weight: bold;
+      color: white;
+    }
+
+    .data-flow.in {
+      background-color: #1E88E5;
+    }
+
+    .data-flow.out {
+      background-color: #43A047;
+    }
+
+    .layer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 8px;
+      padding: 10px 16px;
+      margin-bottom: 12px;
+      font-size: 1rem;
+      cursor: grab;
+      transition: all 0.3s ease;
+    }
+
+    .layer-buttons {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .remove-btn {
+      background-color: transparent;
+      color: #F44336;
+      border: none;
+      font-size: 1.2rem;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .upgrade-btn {
+      background-color: #43A047;
+      color: #FFFFFF;
+      border: none;
+      border-radius: 4px;
+      padding: 6px 16px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .upgrade-btn:hover {
+      background-color: #388E3C;
+    }
+
+    /* Power-Ups Container Styles */
+    .power-ups-container {
+      width: 350px;
+      background-color: #FFFFFF;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 12px;
+      padding: 24px;
+      height: 500px;
+      overflow-y: auto;
+    }
+
+    .power-up-section {
+      border: 1px solid #E0E0E0;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 16px;
+    }
+
+    .power-up-section h3 {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 1.2rem;
+      cursor: pointer;
+      padding: 8px;
+      user-select: none;
+    }
+
+    .power-up-section.attention-boost h3 {
+      background-color: #E3F2FD;
+      color: #1E88E5;
+    }
+
+    .power-up-section.data-defender h3 {
+      background-color: #FFEBEE;
+      color: #D32F2F;
+    }
+
+    .power-up-section.creative-power-up h3 {
+      background-color: #FFF3E0;
+      color: #F57C00;
+    }
+
+    .power-up-buttons {
+  display: none;
+  flex-direction: column; /* Arrange buttons in a column */
+  gap: 10px; /* Add space between buttons */
+  margin-top: 12px;
+}
+
+    .mdc-button--raised.attention-boost {
+      background-color: #E3F2FD;
+      color: #1E88E5;
+    }
+
+    .mdc-button--raised.data-defender {
+      background-color: #FFEBEE;
+      color: #D32F2F;
+    }
+
+    .mdc-button--raised.creative-power-up {
+      background-color: #FFF3E0;
+      color: #F57C00;
+    }
+
+    .description-container {
+  position: absolute;
+  top: 100px; /* Adjust as needed */
+  right: 50px; /* Position outside main-wrapper */
+  width: 300px; /* Set width */
+  margin-top: 0; /* Remove the top margin as it's now positioned absolutely */
+  padding: 16px;
+  background-color: #F5F5F5;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: none; /* Keep hidden by default */
+  min-height: 100px;
+}
+
+
+.description-container h3 {
+    color: #1E88E5;
+    margin-bottom: 12px;
+}
+
+
+.description-container p {
+    font-size: 1rem;
+    margin: 0;
+    line-height: 1.5; /* Keeps lines spaced normally */
+    white-space: normal; /* Ensure text wraps like regular text */
+    color: #202124; /* Confirm visibility */
+    overflow-wrap: normal; /* Prevent forced line breaks */
+    word-break: normal;    /* Disable breaking words unnecessarily */
+}
+
+
+
+/* Keyframes for typing effect */
+@keyframes typing {
+    from {
+        width: 0;
+    }
+    to {
+        width: 100%;
+    }
+}
+
+@keyframes blink {
+    from,
+    to {
+        border-color: transparent;
+    }
+    50% {
+        border-color: black;
+    }
+}
+
+    /* Shimmer effect for buttons */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.mdc-button {
+  animation: shimmer 1.5s infinite linear;
+  background: linear-gradient(90deg, #E0F7FA 25%, #B2EBF2 50%, #E0F7FA 75%);
+  background-size: 200% auto;
+}
+
+
+    .close-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background-color: transparent;
+      border: none;
+      font-size: 1.5rem;
+      color: #D32F2F;
+      cursor: pointer;
+    }
+
+    .data-out-container {
+  margin-top: 24px;
+  background-color: #FFFFFF;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  width: 600px; /* Double the original width */
+  height: 200px; /* Adjust height if needed */
+  margin: 20px auto;
+  text-align: center;
+  overflow-y: auto;
+}
+
+/* Wrapper to hold Data Out and Legend side-by-side */
+.data-out-wrapper {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px; /* Space between Data Out and Legend */
+}
+
+/* Legend styling */
+.data-legend {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px;
+    background-color: #f5f5f5;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    max-width: 150px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+}
+
+.legend-color {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+}
+
+/* Color indicators matching the data box colors */
+.legend-color.good-data { background-color: #43A047; }
+.legend-color.error-data { background-color: #F44336; }
+.legend-color.missing-data { background-color: #BDBDBD; }
+.legend-color.creative-data { background-color: #FFEB3B; }
+
+
+.data-boxes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  position: relative;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+/* Smaller font and button size for stop generation */
+.stop-generation-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem; /* Smaller font size */
+}
+
+.stop-generation-container button {
+  font-size: 0.7rem; /* Smaller button text */
+  padding: 4px 8px; /* Smaller padding */
+  color: #D32F2F;
+}
+
+
+.data-box {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      animation: fadeIn 1s infinite alternate;
+    }
+
+.good-data {
+      background-color: #43A047;
+    }
+
+.error-data {
+      background-color: #F44336;
+    }
+
+    .missing-data {
+      background-color: #BDBDBD;
+    }
+
+    .creative-data {
+      background-color: #FFEB3B;
+    }
+
+    @keyframes fadeIn {
+      0% {
+        opacity: 0;
+      }
+
+      100% {
+        opacity: 1;
+      }
+    }   
+
+    .power-up-section h3.expanded {
+  font-weight: bold;
+  color: #a6bac8;
+}
+
+.status-indicator {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  color: white;
+  font-weight: bold;
+  background-color: #4CAF50; /* Green for "Running" */
+}
+
+.status-indicator.stopped {
+  background-color: #F44336; /* Red for "Stopped" */
+}
+
+.static-button {
+    background: #74b8df; /* Set a solid color */
+    color: white;
+    padding: 4px 8px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .static-button:hover {
+    background: #1d0101;
+  }
+
+  </style>
+</head>
+
+<body onload="updateDataVisualization()">
+    <div id="status-indicator" class="status-indicator">Running</div>
+
+  <div style="text-align: center; margin-bottom: 20px;">
+    <div class="mdc-typography--headline4">Build your own Transformer</div>
+  </div>
+
+  <div class="main-wrapper">
+    <div class="main-content">
+      <!-- Input Data Controls -->
+      <div class="input-data-container">
+        <h2>This is how input data can be</h2>
+        <div class="input-slider">
+          <label for="data-slider">Data</label>
+          <input type="range" id="data-slider" min="0" max="100" value="50" oninput="updateDataVisualization()">
+        </div>
+
+        <div class="input-slider">
+          <label for="error-slider">Error</label>
+          <input type="range" id="error-slider" min="0" max="100" value="10" oninput="updateDataVisualization()">
+        </div>
+
+        <div class="input-slider">
+          <label for="noise-slider">Noise</label>
+          <input type="range" id="noise-slider" min="0" max="100" value="20" oninput="updateDataVisualization()">
+        </div>
+
+        <div class="input-slider">
+          <label for="gap-slider">Data Gap</label>
+          <input type="range" id="gap-slider" min="0" max="100" value="5" oninput="updateDataVisualization()">
+        </div>
+
+        <div class="data-visualization" id="data-visualization"></div>
+      </div>
+
+      <!-- Transformer Builder -->
+      <div class="container" id="transformer-container">
+        <h2>Transformer Builder</h2>
+        <div class="data-flow in">Data In</div>
+        <div id="transformer">
+            <div class="layer" draggable="true" ondragstart="dragStart(event)" ondragover="dragOver(event)" ondrop="drop(event)">Generic transformer <button class="remove-btn" onclick="removeLayer(this)">Remove</button></div>
+            <div class="layer" draggable="true" ondragstart="dragStart(event)" ondragover="dragOver(event)" ondrop="drop(event)">Generic transformer <button class="remove-btn" onclick="removeLayer(this)">Remove</button></div>
+            <div class="layer" draggable="true" ondragstart="dragStart(event)" ondragover="dragOver(event)" ondrop="drop(event)">Generic transformer <button class="remove-btn" onclick="removeLayer(this)">Remove</button></div>
+        </div>
+        <div class="data-flow out">Data Out</div>
+      </div>
+
+      <!-- Power-Ups Container -->
+      <div class="power-ups-container">
+        <h2>Lets add some Power-Ups</h2>
+
+        <div class="power-up-section attention-boost">
+          <h3 onclick="togglePowerUps(this)">Transformer Boosts</h3>
+          <div class="power-up-buttons">
+            <button class="mdc-button mdc-button--raised attention-boost" onclick="addPowerUp('Attention Boost')">Attention Boost</button>
+            <button class="mdc-button mdc-button--raised attention-boost" onclick="addPowerUp('Feed-Forward Surge')">Feed-Forward Surge</button>
+            <button class="mdc-button mdc-button--raised attention-boost" onclick="addPowerUp('Positional Encoding Precision')">Positional Encoding Precision</button>
+          </div>
+        </div>
+
+        <div class="power-up-section data-defender">
+          <h3 onclick="togglePowerUps(this)">Data Defenders</h3>
+          <div class="power-up-buttons">
+            <button class="mdc-button mdc-button--raised data-defender" onclick="addPowerUp('Shield Barrier')">Shield Barrier</button>
+            <button class="mdc-button mdc-button--raised data-defender" onclick="addPowerUp('Data Purification')">Data Purification</button>
+          </div>
+        </div>
+
+        <div class="power-up-section creative-power-up">
+          <h3 onclick="togglePowerUps(this)">Creative Power-Ups</h3>
+          <div class="power-up-buttons">
+            <button class="mdc-button mdc-button--raised creative-power-up" onclick="addPowerUp('Chaos Theory')">Chaos Theory</button>
+            <button class="mdc-button mdc-button--raised creative-power-up" onclick="addPowerUp('Quantum Leap')">Quantum Leap</button>
+            <button class="mdc-button mdc-button--raised creative-power-up" onclick="addPowerUp('Neural Network Fusion')">Neural Network Fusion</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="data-out-wrapper">
+        <!-- Data Out Container -->
+        <div class="data-out-container" id="data-out-container">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h2>Data Out</h2>
+                <div class="stop-generation-container">
+                    <span>Generation:</span>
+                    <button id="stop-resume-button" class="static-button" onclick="toggleDataGeneration()">Stop</button>
+                </div>
+            </div>
+            <div id="data-out-boxes" class="data-boxes"></div>
+        </div>
+    
+        <!-- Legend Section on the right side -->
+        <div class="data-legend">
+            <div class="legend-item"><span class="legend-color good-data"></span> Good Data</div>
+            <div class="legend-item"><span class="legend-color error-data"></span> Error Data</div>
+            <div class="legend-item"><span class="legend-color missing-data"></span> Missing Data</div>
+            <div class="legend-item"><span class="legend-color creative-data"></span> Creative Data</div>
+        </div>
+    </div>
+      
+
+<!-- Description Container with Close Button and Typewriter Animation -->
+<div class="description-container" id="description-container">
+    <h3>Power-Up Description</h3>
+    <button class="close-btn" onclick="closeDescription()">&times;</button>
+    <p id="power-up-description"></p>
+  </div>
+</div>
+
+  </body>
+
+  <script>
+    let isTyping = false;
+    let upgradeLevel = 0; // Track the total number of upgrades
+    let isDataDefenderActive = false; // Track if data defender is active
+    let isCreativeBoostActive = false; // Track if creative power-up is active
+    
+    let dataOutGenerationInterval;
+    let isDataGenerating = true; // Track data generation state
+
+    // Call startDataGeneration on page load to initialize
+    window.onload = function () {
+    updateDataVisualization(); // Load initial visualization
+    startDataGeneration();     // Start data generation
+};
+    function addPowerUp(powerUpName) {
+      if (isTyping) return;
+
+      let description = getPowerUpDescription(powerUpName);
+      let descriptionContainer = document.querySelector(".description-container");
+      let descriptionBox = document.getElementById("power-up-description");
+      let descriptionTitle = document.querySelector(".description-container h3");
+
+      // Set the description title to match the power-up name
+      descriptionTitle.textContent = powerUpName;
+
+      descriptionBox.textContent = "";
+      descriptionBox.style.width = "0";
+      typeWriter(description, descriptionBox);
+      descriptionContainer.style.display = "block";
+
+      let newLayer = document.createElement("div");
+      newLayer.classList.add("layer");
+      newLayer.draggable = true;
+      newLayer.ondragstart = dragStart;
+      newLayer.ondragover = dragOver;
+      newLayer.ondrop = drop;
+
+      let layerContent = document.createElement("span");
+      layerContent.textContent = powerUpName;
+
+      let buttonContainer = document.createElement("div");
+      buttonContainer.classList.add("layer-buttons");
+
+      let removeButton = document.createElement("button");
+      removeButton.classList.add("remove-btn");
+      removeButton.innerHTML = "×";
+      removeButton.onclick = function () {
+        removeLayer(removeButton);
+      };
+
+      let upgradeButton = document.createElement("button");
+      upgradeButton.classList.add("upgrade-btn");
+      upgradeButton.textContent = "Upgrade";
+      upgradeButton.onclick = function () {
+        upgradeLayer(upgradeButton);
+      };
+
+      buttonContainer.appendChild(upgradeButton);
+      buttonContainer.appendChild(removeButton);
+
+      newLayer.appendChild(layerContent);
+      newLayer.appendChild(buttonContainer);
+
+      // Assign the style based on the power-up group and color accordingly
+      if (powerUpName.includes("Boost") || powerUpName.includes("Surge") || powerUpName.includes("Precision")) {
+        newLayer.classList.add("attention-boost");
+        newLayer.style.backgroundColor = "#E3F2FD";
+        newLayer.style.color = "#1E88E5";
+      } else if (powerUpName.includes("Shield Barrier") || powerUpName.includes("Data Purification")) {
+        newLayer.classList.add("data-defender");
+        newLayer.style.backgroundColor = "#FFEBEE";
+        newLayer.style.color = "#D32F2F";
+      } else if (powerUpName.includes("Chaos Theory") || powerUpName.includes("Quantum Leap") || powerUpName.includes("Neural Network Fusion")) {
+        newLayer.classList.add("creative-power-up");
+        newLayer.style.backgroundColor = "#FFF3E0";
+        newLayer.style.color = "#F57C00";
+      }
+
+      document.getElementById("transformer").appendChild(newLayer);
+
+      // Activate effects of power-ups
+      if (powerUpName.includes("Data Purification") || powerUpName.includes("Shield Barrier")) {
+        activateDataDefender();
+      }
+      if (powerUpName.includes("Chaos Theory") || powerUpName.includes("Quantum Leap") || powerUpName.includes("Neural Network Fusion")) {
+        activateCreativeBoost();
+      }
+    }
+
+    function upgradeLayer(button) {
+      let layer = button.parentElement.parentElement; // Get the layer div
+      let layerUpgradeLevel = parseInt(layer.getAttribute("data-upgrade-level") || "0");
+
+      if (layerUpgradeLevel < 4) {
+        layerUpgradeLevel += 1;
+        layer.setAttribute("data-upgrade-level", layerUpgradeLevel);
+        upgradeLevel += 1; // Track total upgrades
+
+        switch (layerUpgradeLevel) {
+          case 1:
+            layer.style.transform = "scale(1.1)";
+            layer.style.fontWeight = "bold";
+            break;
+          case 2:
+            layer.style.border = "2px solid #1E88E5";
+            break;
+          case 3:
+            layer.style.padding = "20px 24px";
+            break;
+          case 4:
+            layer.style.boxShadow = "0 4px 16px rgba(0, 0, 0, 0.3)";
+            break;
+        }
+
+        // Increase data generation speed with each upgrade level
+        updateDataGenerationSpeed();
+      } else {
+        alert("Maximum upgrade level reached!");
+      }
+    }
+
+    function getPowerUpDescription(powerUpName) {
+      const powerUpDescriptions = {
+       "Attention Boost": "Increases the attention mechanism's ability to focus on relevant information, making it more effective at capturing long-range dependencies.",
+        "Feed-Forward Surge": "Temporarily enhances the feed-forward network, allowing it to process and transform data with greater efficiency and depth.",
+        "Positional Encoding Precision": "Refines the positional encoding, ensuring that the model accurately understands the order and position of tokens.",
+        "Shield Barrier": "Creates a protective barrier around the transformer, shielding it from noisy or irrelevant data.",
+        "Data Purification": "Cleanses the input data, removing any inconsistencies or noise, leading to cleaner outputs.",
+        "Time Warp": "Allows the transformer to process sequential data in a non-linear manner, improving handling of long sequences.",
+        "Chaos Theory": "Introduces controlled randomness into the model, which can help in avoiding overfitting and discovering novel patterns.",
+        "Quantum Leap": "Accelerates the model's learning process, allowing it to converge on solutions faster and more efficiently.",
+        "Neural Network Fusion": "Blends the transformer architecture with other neural network paradigms to enhance its versatility and performance."
+      };
+      return powerUpDescriptions[powerUpName] || "No description available.";
+    }
+
+function togglePowerUps(header) {
+  const buttons = header.nextElementSibling;
+  const isExpanded = buttons.style.display === "block";
+
+  // Toggle visibility
+  buttons.style.display = isExpanded ? "none" : "block";
+
+  // Toggle expanded class to apply consistent styling
+  header.classList.toggle("expanded", !isExpanded);
+}
+
+
+    function removeLayer(button) {
+      let layer = button.parentElement.parentElement;
+      layer.remove();
+    }
+
+    function typeWriter(text, element) {
+    let i = 0;
+    const speed = 50;
+
+    function type() {
+        // Slice text to the current character index
+        element.textContent = text.slice(0, i + 1);
+        console.log("Typing character:", text.charAt(i)); // Log each character for debugging
+        if (i < text.length - 1) {
+            i++;
+            setTimeout(type, speed);
+        }
+    }
+
+    // Clear any existing text before starting
+    element.textContent = "";
+    type();
+}
+
+
+/*function typeWriter(text, element) {
+    console.log("Displaying full text:", text);
+    element.innerText = text;
+}*/
+
+
+
+    function closeDescription() {
+      let descriptionContainer = document.querySelector(".description-container");
+      descriptionContainer.style.display = "none";
+    }
+
+    function updateDataVisualization() {
+      let dataValue = document.getElementById('data-slider').value;
+      let errorValue = document.getElementById('error-slider').value;
+      let noiseValue = document.getElementById('noise-slider').value;
+      let gapValue = document.getElementById('gap-slider').value;
+
+      let dataVisualization = document.getElementById('data-visualization');
+      dataVisualization.innerHTML = '';
+      generateData('Data', dataValue, 'data-item');
+      generateData('Error', errorValue, 'error-item');
+      generateData('Noise', noiseValue, 'noise-item');
+      generateData('Data Gap', gapValue, 'gap-item');
+    }
+
+    function generateData(type, count, className) {
+      let dataVisualization = document.getElementById('data-visualization');
+      for (let i = 0; i < count / 10; i++) {
+        let item = document.createElement('div');
+        item.classList.add('data-item', className);
+        item.textContent = `${type} ${i + 1}`;
+        dataVisualization.appendChild(item);
+      }
+    }
+
+    let draggedElement = null;
+
+    function dragStart(event) {
+      draggedElement = event.target;
+      event.target.classList.add('dragging');
+    }
+
+    function dragOver(event) {
+      event.preventDefault();
+      const target = event.target.closest(".layer");
+      if (target && target !== draggedElement) {
+        const transformer = document.getElementById("transformer");
+        transformer.insertBefore(draggedElement, target.nextSibling);
+      }
+    }
+
+    function drop(event) {
+      event.target.classList.remove('dragging');
+      draggedElement = null;
+    }
+
+    function updateDataGenerationSpeed() {
+      let dataInterval = Math.max(1000 - upgradeLevel * 200, 200);
+      clearInterval(dataOutGenerationInterval);
+      dataOutGenerationInterval = setInterval(() => {
+        generateDataOut();
+      }, dataInterval);
+    }
+
+    function activateDataDefender() {
+      isDataDefenderActive = true;
+    }
+
+    function activateCreativeBoost() {
+      isCreativeBoostActive = true;
+    }
+
+    function generateDataOut() {
+      let dataOutBoxes = document.getElementById('data-out-boxes');
+      let dataType = Math.random();
+      let newDataBox = document.createElement('div');
+      newDataBox.classList.add('data-box');
+
+      if (dataType < 0.6) {
+        newDataBox.classList.add('good-data');
+      } else if (dataType < 0.8) {
+        if (!isDataDefenderActive) {
+          newDataBox.classList.add('error-data');
+        } else {
+          newDataBox.classList.add('good-data');
+        }
+      } else {
+        newDataBox.classList.add('missing-data');
+      }
+
+      if (isCreativeBoostActive && Math.random() > 0.7) {
+        newDataBox.classList.remove('good-data', 'error-data', 'missing-data');
+        newDataBox.classList.add('creative-data');
+      }
+
+      dataOutBoxes.appendChild(newDataBox);
+
+      if (dataOutBoxes.children.length > 100) {
+        dataOutBoxes.removeChild(dataOutBoxes.firstChild);
+      }
+    }
+
+function stopDataGeneration() {
+  clearInterval(dataOutGenerationInterval);
+  const statusIndicator = document.getElementById("status-indicator");
+  statusIndicator.textContent = "Stopped";
+  statusIndicator.classList.add("stopped");
+}
+
+// Function to resume data generation, if needed
+function startDataGeneration() {
+  const statusIndicator = document.getElementById("status-indicator");
+  statusIndicator.textContent = "Running";
+  statusIndicator.classList.remove("stopped");
+  dataOutGenerationInterval = setInterval(() => {
+    generateDataOut();
+  }, 1000);
+}
+
+function toggleDataGeneration() {
+  const button = document.getElementById("stop-resume-button");
+  const statusIndicator = document.getElementById("status-indicator");
+
+  if (isDataGenerating) {
+    clearInterval(dataOutGenerationInterval);
+    button.textContent = "Resume";
+    statusIndicator.textContent = "Stopped";
+    statusIndicator.classList.add("stopped");
+  } else {
+    startDataGeneration();
+    button.textContent = "Stop";
+    statusIndicator.textContent = "Running";
+    statusIndicator.classList.remove("stopped");
+  }
+  isDataGenerating = !isDataGenerating; // Toggle state
+}
+  </script>
+
+</body>
+
+</html>

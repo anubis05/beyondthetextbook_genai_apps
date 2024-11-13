@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GenAI Models Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="main-box">
+        <h1>Explore GenAI Models</h1>
+        
+        <!-- Start Game Button -->
+        <button id="start-game-button" onclick="startGame()">Start Game</button>
+        
+        <!-- Question Box -->
+        <div id="question-box" class="question-box" style="display: none;">
+            <img id="model-icon" class="model-icon" src="" alt="Model Icon">
+            <h2 id="question-title">Question</h2>
+            <div id="options" class="options">
+                <!-- Options will be generated here -->
+            </div>
+        </div>
+
+        <!-- Result Box -->
+        <div id="result-box" class="result-box" style="display: none;">
+            <p id="result-message">Correct!</p>
+            <!-- Display for Correct Answer when the user guesses incorrectly -->
+            <p id="correct-answer-display" style="display: none;"></p>
+            <p id="model-strengths">Did you know? <span id="strengths-text"></span></p>
+            <button id="try-button" class="try-button" onclick="openLink()">Try It</button>
+            <button id="next-question-button" class="next-button" onclick="nextQuestion()">Next Question</button>
+        </div>
+    </div>
+
+    <!-- Confetti Animation Container -->
+    <div id="confetti-container"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Let's build a Transformer</title>
+  <link href="https://unpkg.com/material-components-web@13.0.0/dist/material-components-web.min.css" rel="stylesheet">
+  <script src="https://unpkg.com/material-components-web@13.0.0/dist/material-components-web.min.js"></script>
+
+  <style>
+    /* General Page Styling */
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #FAFAFA;
+      color: #202124;
+      margin: 0;
+      padding: 0;
+    }
+
+    h2 {
+      margin-bottom: 16px;
+      font-size: 1.5rem;
+      color: #1E88E5;
+    }
+
+    .main-content {
+      display: flex;
+      justify-content: space-between;
+      padding: 24px;
+      gap: 24px;
+    }
+
+    /* Left Container for Input Data Controls */
+    .input-data-container {
+      width: 250px;
+      background-color: #FFFFFF;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 12px;
+      padding: 24px;
+      height: 500px; /* Fixed height */
+      overflow-y: auto; /* Allow scrolling */
+    }
+
+    .input-data-container h2 {
+      font-size: 1.3rem;
+      color: #1E88E5;
+      margin-bottom: 16px;
+    }
+
+    .input-slider {
+      margin-bottom: 16px;
+    }
+
+    .input-slider label {
+      display: block;
+      font-size: 1rem;
+      margin-bottom: 8px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 8px;
+      background: #E0E0E0;
+      border-radius: 5px;
+      outline: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #1E88E5;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #1E88E5;
+      cursor: pointer;
+    }
+
+    .data-visualization {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .data-visualization .data-item {
+      background-color: #E0F7FA;
+      color: #00796B;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      text-align: center;
+    }
+
+    .data-visualization .error-item {
+      background-color: #FFEBEE;
+      color: #D32F2F;
+    }
+
+    .data-visualization .noise-item {
+      background-color: #FFF3E0;
+      color: #F57C00;
+    }
+
+    .data-visualization .gap-item {
+      background-color: #E0E0E0;
+      color: #757575;
+    }
+
+    /* Transformer Builder and Power-Ups Container */
+    .container {
+      width: 400px;
+      background-color: #FFFFFF;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 12px;
+      padding: 24px;
+      height: 500px; /* Fixed height */
+      overflow-y: auto; /* Allow scrolling */
+    }
+
+    .data-flow {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 8px 16px;
+      margin: 16px 0;
+      border-radius: 24px;
+      font-size: 1rem;
+      font-weight: bold;
+      color: white;
+    }
+
+    .data-flow.in {
+      background-color: #1E88E5;
+    }
+
+    .data-flow.out {
+      background-color: #43A047;
+    }
+
+    .layer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #F1F3F4;
+      border-radius: 8px;
+      padding: 10px 16px;
+      margin-bottom: 12px;
+      font-size: 1rem;
+    }
+
+    .remove-btn {
+      background-color: #F44336;
+      color: #FFFFFF;
+      border: none;
+      border-radius: 4px;
+      padding: 6px 12px;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+
+    .mdc-button--raised {
+      background-color: #1E88E5;
+      color: #FFFFFF;
+      margin: 4px 0;
+      width: 100%;
+      text-align: left;
+    }
+
+    .mdc-button--raised:hover {
+      background-color: #1565C0;
+    }
+
+    .power-ups-container {
+      width: 400px;
+      background-color: #FFFFFF;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 12px;
+      padding: 24px;
+      height: 500px; /* Fixed height */
+      overflow-y: auto; /* Allow scrolling */
+    }
+
+    .power-up-section {
+      border: 1px solid #E0E0E0;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 16px;
+    }
+
+    .power-up-section h3 {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 1.2rem;
+      cursor: pointer;
+      color: #1E88E5;
+      user-select: none;
+      padding: 8px;
+      background-color: #E3F2FD;
+      border-radius: 8px;
+    }
+
+    .power-up-buttons {
+      display: none;
+      margin-top: 12px;
+    }
+
+    .description-container {
+      display: none;
+      position: absolute;
+      top: 20%;
+      right: 10%;
+      width: 300px;
+      background-color: #F5F5F5;
+      border-radius: 8px;
+      padding: 16px;
+      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+    }
+
+    .description-container h3 {
+      margin-bottom: 12px;
+      color: #1E88E5;
+    }
+
+    .description-container p {
+    font-size: 1rem;
+    margin: 0;
+    line-height: 1.5; /* Space between lines */
+    overflow: visible;
+    white-space: pre-wrap; /* Allows multi-line wrapping */
+    color: #202124; /* Set to a visible color */
+}
+  </style>
+</head>
+
+<body>
+
+  <div style="text-align: center; margin-bottom: 20px;">
+    <div class="mdc-typography--headline4">Transformer Visualizer</div>
+  </div>
+
+  <div class="main-content">
+    <!-- Input Data Container -->
+    <div class="input-data-container">
+      <h2>Input Data Controls</h2>
+
+      <div class="input-slider">
+        <label for="data-slider">Data</label>
+        <input type="range" id="data-slider" min="0" max="100" value="50" oninput="updateDataVisualization()">
+      </div>
+
+      <div class="input-slider">
+        <label for="error-slider">Error</label>
+        <input type="range" id="error-slider" min="0" max="100" value="10" oninput="updateDataVisualization()">
+      </div>
+
+      <div class="input-slider">
+        <label for="noise-slider">Noise</label>
+        <input type="range" id="noise-slider" min="0" max="100" value="20" oninput="updateDataVisualization()">
+      </div>
+
+      <div class="input-slider">
+        <label for="gap-slider">Data Gap</label>
+        <input type="range" id="gap-slider" min="0" max="100" value="5" oninput="updateDataVisualization()">
+      </div>
+
+      <div class="data-visualization" id="data-visualization">
+        <!-- Dynamic Data Generation will appear here -->
+      </div>
+    </div>
+
+    <!-- Transformer Builder -->
+    <div class="container">
+      <h2>Transformer Builder</h2>
+      <div class="data-flow in">Data In</div>
+      <div id="transformer">
+        <div class="layer">Attention <button class="remove-btn" onclick="removeLayer(this)">Remove</button></div>
+        <div class="layer">Feed-forward <button class="remove-btn" onclick="removeLayer(this)">Remove</button></div>
+        <div class="layer">Positional Encoding <button class="remove-btn" onclick="removeLayer(this)">Remove</button></div>
+    </div>
+      <div class="data-flow out">Data Out</div>
+    </div>
+
+    <!-- Power-Up Container -->
+    <div class="power-ups-container">
+      <h2>Power-Ups</h2>
+      <div class="power-up-section">
+        <h3 onclick="togglePowerUps(this)">Transformer Boosts</h3>
+        <div class="power-up-buttons">
+          <button class="mdc-button mdc-button--raised" onclick="addPowerUp('Attention Boost')">
+            <span class="mdc-button__ripple"></span> Attention Boost
+          </button>
+          <button class="mdc-button mdc-button--raised" onclick="addPowerUp('Feed-Forward Surge')">
+            <span class="mdc-button__ripple"></span> Feed-Forward Surge
+          </button>
+          <button class="mdc-button mdc-button--raised" onclick="addPowerUp('Positional Encoding Precision')">
+            <span class="mdc-button__ripple"></span> Positional Encoding Precision
+          </button>
+        </div>
+      </div>
+
+      <div class="power-up-section">
+        <h3 onclick="togglePowerUps(this)">Data Defenders</h3>
+        <div class="power-up-buttons">
+          <button class="mdc-button mdc-button--raised" onclick="addPowerUp('Shield Barrier')">
+            <span class="mdc-button__ripple"></span> Shield Barrier
+          </button>
+          <button class="mdc-button mdc-button--raised" onclick="addPowerUp('Data Purification')">
+            <span class="mdc-button__ripple"></span> Data Purification
+          </button>
+        </div>
+      </div>
+  
+
+  <div class="power-up-section">
+    <h3 onclick="togglePowerUps(this)">Creative Power-Ups</h3>
+    <div class="power-up-buttons">
+      <button class="mdc-button mdc-button--raised" onclick="addPowerUp('Chaos Theory')">
+        <span class="mdc-button__ripple"></span>Chaos Theory
+      </button>
+      <button class="mdc-button mdc-button--raised" onclick="addPowerUp('Quantum Leap')">
+        <span class="mdc-button__ripple"></span>Quantum Leap
+      </button>
+      <button class="mdc-button mdc-button--raised" onclick="addPowerUp('Neural Network Fusion')">
+        <span class="mdc-button__ripple"></span>Neural Network Fusion
+      </button>
+    </div>
+  </div>
+</div>
+</div>
+
+  <div class="description-container">
+    <h3>Power-Up Description</h3>
+    <p id="power-up-description">No description available.</p>
+  </div>
+
+  <script>
+    function addPowerUp(powerUpName) {
+      let description = getPowerUpDescription(powerUpName);
+      let newLayer = document.createElement("div");
+      newLayer.classList.add("layer");
+      newLayer.innerHTML = `${powerUpName} <button class="remove-btn" onclick="removeLayer(this)">Remove</button>`;
+      document.getElementById("transformer").appendChild(newLayer);
+
+      // Update description box
+      let descriptionContainer = document.querySelector(".description-container");
+      let descriptionBox = document.getElementById("power-up-description");
+      descriptionBox.textContent = description;
+      descriptionContainer.style.display = "block";
+    }
+
+    function getPowerUpDescription(powerUpName) {
+      const powerUpDescriptions = {
+        "Attention Boost": "Increases the attention mechanism's ability to focus on relevant information, making it more effective at capturing long-range dependencies.",
+        "Feed-Forward Surge": "Temporarily enhances the feed-forward network, allowing it to process and transform data with greater efficiency and depth.",
+        "Positional Encoding Precision": "Refines the positional encoding, ensuring that the model accurately understands the order and position of tokens.",
+        "Shield Barrier": "Creates a protective barrier around the transformer, shielding it from noisy or irrelevant data.",
+        "Data Purification": "Cleanses the input data, removing any inconsistencies or noise, leading to cleaner outputs.",
+        "Time Warp": "Allows the transformer to process sequential data in a non-linear manner, improving handling of long sequences.",
+        "Chaos Theory": "Introduces controlled randomness into the model, which can help in avoiding overfitting and discovering novel patterns.",
+        "Quantum Leap": "Accelerates the model's learning process, allowing it to converge on solutions faster and more efficiently.",
+        "Neural Network Fusion": "Blends the transformer architecture with other neural network paradigms to enhance its versatility and performance."
+      };
+
+      return powerUpDescriptions[powerUpName] || "No description available.";
+    }
+
+    function togglePowerUps(header) {
+      let buttons = header.nextElementSibling;
+      if (buttons.style.display === "block") {
+        buttons.style.display = "none";
+      } else {
+        buttons.style.display = "block";
+      }
+    }
+
+    function removeLayer(button) {
+      let layer = button.parentElement;
+      layer.remove();
+    }
+
+    // Function to update the data visualization based on sliders
+    function updateDataVisualization() {
+      let dataValue = document.getElementById('data-slider').value;
+      let errorValue = document.getElementById('error-slider').value;
+      let noiseValue = document.getElementById('noise-slider').value;
+      let gapValue = document.getElementById('gap-slider').value;
+
+      let dataVisualization = document.getElementById('data-visualization');
+      dataVisualization.innerHTML = ''; // Clear previous visualization
+
+      generateData('Data', dataValue, 'data-item');
+      generateData('Error', errorValue, 'error-item');
+      generateData('Noise', noiseValue, 'noise-item');
+      generateData('Data Gap', gapValue, 'gap-item');
+    }
+
+    // Helper function to generate the data items
+    function generateData(type, count, className) {
+      let dataVisualization = document.getElementById('data-visualization');
+      for (let i = 0; i < count / 10; i++) {
+        let item = document.createElement('div');
+        item.classList.add('data-item', className);
+        item.textContent = `${type} ${i + 1}`;
+        dataVisualization.appendChild(item);
+      }
+    }
+
+    updateDataVisualization(); // Initial call to populate data visualization
+  </script>
+
+</body>
+
+</html>

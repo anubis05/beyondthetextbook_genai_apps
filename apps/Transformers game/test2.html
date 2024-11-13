@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Transformer Visualizer</title>
+  <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
+  <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <style>
+    .container {
+      width: 600px;
+      margin: 0 auto;
+      border: 1px solid #ccc;
+      padding: 20px;
+      border-radius: 4px;
+    }
+
+    .layer {
+      border: 1px solid #ccc;
+      margin: 10px;
+      padding: 10px;
+      border-radius: 4px;
+      background-color: #f5f5f5;
+    }
+
+    .data-flow {
+      width: 100px;
+      height: 30px;
+      background-color: #00bcd4;
+      margin: 20px auto;
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .data-flow::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100px;
+      width: 100px;
+      height: 100%;
+      background-color: rgba(255, 255, 255, 0.3);
+      animation: flow 2s linear infinite;
+    }
+
+    @keyframes flow {
+      0% {
+        left: -100px;
+      }
+
+      100% {
+        left: 100%;
+      }
+    }
+
+    .power-up-section {
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 10px;
+    }
+
+    .power-up-section h3 {
+      cursor: pointer;
+      user-select: none;
+      /* Prevent accidental text selection */
+      background-color: #e0e0e0;
+      /* Light gray background */
+      padding: 8px;
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+
+    .power-up-buttons {
+      display: none;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <div class="mdc-typography--headline4">Transformer Visualizer</div>
+
+    <div class="data-flow">Data In</div>
+
+    <div id="transformer">
+      <div class="layer">Attention</div>
+      <div class="layer">Feed-forward</div>
+      <div class="layer">Positional Encoding</div>
+    </div>
+
+    <div class="data-flow">Data Out</div>
+
+    <div class="mdc-slider mdc-slider--discrete" tabindex="0" role="slider" aria-valuemin="0" aria-valuemax="100"
+      aria-valuenow="0" aria-label="Noise Level">
+      <div class="mdc-slider__track-container">
+        <div class="mdc-slider__track"></div>
+      </div>
+      <div class="mdc-slider__thumb-container">
+        <div class="mdc-slider__pin">
+          <span class="mdc-slider__pin-value-marker"></span>
+        </div>
+        <svg class="mdc-slider__thumb" width="21" height="21">
+          <circle cx="10.5" cy="10.5" r="7.875"></circle>
+        </svg>
+        <div class="mdc-slider__focus-ring"></div>
+      </div>
+    </div>
+    <div class="mdc-typography--body2">
+        Noise Level: <input type="range" id="noise" min="0" max="100" value="0">    
+    </div>
+
+    <h2>Power Ups</h2>
+
+
+    <div class="power-up-section">
+      <h3 onclick="togglePowerUps(this)">Core Power-Ups</h3>
+      <div class="power-up-buttons">
+        <button class="mdc-button mdc-button--raised" onclick="addPowerUp('Attention Boost')">
+          <span class="mdc-button__ripple"></span>Attention Boost
+        </button>
+        <button class="mdc-button mdc-button--raised" onclick="addPowerUp('Feed-Forward Surge')">
+          <span class="mdc-button__ripple"></span>Feed-Forward Surge
+        </button>
+        <button class="mdc-button mdc-button--raised" onclick="addPowerUp('Positional Encoding Precision')">
+          <span class="mdc-button__ripple"></span>Positional Encoding Precision
+        </button>
+      </div>
+    </div>
+
+    <div class="power-up-section">
+      <h3 onclick="togglePowerUps(this)">Strategic Power-Ups</h3>
+      <div class="power-up-buttons">
+        <button class="mdc-button mdc-button--raised" onclick="addPowerUp('Shield Barrier')">
+          <span class="mdc-button__ripple"></span>Shield Barrier
+        </button>
+        <button class="mdc-button mdc-button--raised" onclick="addPowerUp('Data Purification')">
+          <span class="mdc-button__ripple"></span>Data Purification
+        </button>
+        <button class="mdc-button mdc-button--raised" onclick="addPowerUp('Time Warp')">
+          <span class="mdc-button__ripple"></span>Time Warp
+        </button>
+      </div>
+    </div>
+
+    <div class="power-up-section">
+      <h3 onclick="togglePowerUps(this)">Creative Power-Ups</h3>
+      <div class="power-up-buttons">
+        <button class="mdc-button mdc-button--raised" onclick="addPowerUp('Chaos Theory')">
+          <span class="mdc-button__ripple"></span>Chaos Theory
+        </button>
+        <button class="mdc-button mdc-button--raised" onclick="addPowerUp('Quantum Leap')">
+          <span class="mdc-button__ripple"></span>Quantum Leap
+        </button>
+        <button class="mdc-button mdc-button--raised" onclick="addPowerUp('Neural Network Fusion')">
+          <span class="mdc-button__ripple"></span>Neural Network Fusion
+        </button>
+      </div>
+    </div>
+
+
+  </div>
+
+  <script>
+    function addLayer() {
+      let transformer = document.getElementById("transformer");
+      let layer = document.createElement("div");
+      layer.classList.add("layer");
+      layer.innerHTML = "Layer " + (transformer.childElementCount + 1);
+      transformer.appendChild(layer);
+    }
+
+    function specialFunction() {
+      alert("Special function activated!");
+    }
+
+    function addPowerUp(powerUpName) {
+      let transformer = document.getElementById("transformer");
+      let layer = document.createElement("div");
+      layer.classList.add("layer");
+      layer.innerHTML = powerUpName;
+      transformer.appendChild(layer);
+    }
+
+    function togglePowerUps(heading) {
+      let buttons = heading.nextElementSibling;
+      if (buttons.style.display === "none" || buttons.style.display === "") {
+        buttons.style.display = "block";
+      } else {
+        buttons.style.display = "none";
+      }
+    }
+
+    // Initialize Material Design components
+    const slider = new mdc.slider.MDCSlider(document.querySelector('.mdc-slider'));
+    const buttons = document.querySelectorAll('.mdc-button');
+    for (const button of buttons) {
+      new mdc.ripple.MDCRipple(button);
+    }
+
+    // Add event listener for the slider
+    slider.listen('MDCSlider:input', () => {
+      let noiseLevel = slider.value;
+      console.log("Noise level changed to:", noiseLevel);
+    });
+  </script>
+
+</body>
+
+</html>

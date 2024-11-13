@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive AI Tree for Students</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        /* Basic Material Design styles */
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            background-color: #f5f5f5;
+            overflow: hidden;
+        }
+        .container {
+            max-width: 800px;
+            padding: 20px;
+            margin: 20px;
+            background-color: #e3f2fd;
+            border-radius: 8px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .node {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .node:hover {
+            background-color: #f0f0f0;
+        }
+        .branch-content {
+            display: none;
+            padding-left: 20px;
+        }
+        .material-icons {
+            margin-right: 10px;
+            color: #1976d2;
+        }
+        .interactive-element {
+            margin-top: 10px;
+        }
+        .interactive-element button {
+            background-color: #1976d2;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .interactive-element button:hover {
+            background-color: #0d47a1;
+        }
+        .genai-input {
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+        }
+        .genai-output {
+            margin-top: 5px;
+            font-style: italic;
+        }
+        .hover-card {
+            position: relative;
+            display: inline-block;
+        }
+        .hover-card iframe {
+            display: none;
+            position: relative;
+            top: 0;
+            left: 0;
+            width: 600px;
+            height: 400px;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+        }
+        .interactive-element.hover-card button {
+            cursor: pointer;
+        }
+        .right-panel {
+            width: 100%;
+            height: 100vh;
+            margin: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            transform: translateX(50px);
+        }
+        .right-panel.show {
+            display: block;
+            opacity: 1;
+            transform: translateX(0);
+        }
+        .iframe-container {
+            display: flex;
+            align-items: flex-start;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="iframe-container">
+        <div class="container">
+            <h1>Explore the World of AI</h1>
+            <div id="tree">
+                <!-- AI Root Node -->
+                <!-- Machine Learning (ML) Node -->
+                <div class="node" onclick="toggleBranch('ml')">
+                    <span class="material-icons">computer</span>
+                    <strong>Machine Learning (ML)</strong>
+                </div>
+                <div id="ml" class="branch-content">
+                    <div class="node" onclick="toggleBranch('supervised')">
+                        <span class="material-icons">school</span>
+                        Supervised Learning
+                    </div>
+                    <div id="supervised" class="branch-content">
+                        <p>This is where we teach the computer with labeled examples.</p>
+                        <div class="interactive-element">
+                            <button onclick="loadIframe('supervised_learning.html')">Learn More About Supervised Learning</button>
+                        </div>
+                    </div>
+                    
+                    <div class="node" onclick="toggleBranch('unsupervised')">
+                        <span class="material-icons">search</span>
+                        Unsupervised Learning
+                    </div>
+                    <div id="unsupervised" class="branch-content">
+                        <p>The computer finds hidden patterns on its own.</p>
+                        <div class="interactive-element">
+                            <button onclick="loadIframe('unsupervised_learning.html')">Learn More About Unsupervised Learning</button>
+                        </div>
+                    </div>
+
+                    <div class="node" onclick="toggleBranch('reinforcement')">
+                        <span class="material-icons">pets</span>
+                        Reinforcement Learning
+                    </div>
+                    <div id="reinforcement" class="branch-content">
+                        <p>The computer learns by trying things out and receiving rewards.</p>
+                        <div class="interactive-element">
+                            <button onclick="loadIframe('reinforcement_learning.html')">Learn More About Reinforcement Learning</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Other Types of AI Node -->
+                <div class="node" onclick="toggleBranch('otherAI')">
+                    <span class="material-icons">devices</span>
+                    <strong>Other Types of AI</strong>
+                </div>
+                <div id="otherAI" class="branch-content">
+                    <div class="node" onclick="toggleBranch('nlp')">
+                        <span class="material-icons">chat</span>
+                        Natural Language Processing (NLP)
+                    </div>
+                    <div id="nlp" class="branch-content">
+                        <p>This helps computers understand and talk like humans.</p>
+                        <div class="interactive-element">
+                            <button onclick="loadIframe('nlp.html')">Learn More About NLP</button>
+                        </div>
+                    </div>
+
+                    <div class="node" onclick="toggleBranch('vision')">
+                        <span class="material-icons">visibility</span>
+                        Computer Vision
+                    </div>
+                    <div id="vision" class="branch-content">
+                        <p>This lets computers "see" and understand images.</p>
+                        <div class="interactive-element">
+                            <button onclick="loadIframe('computer_vision.html')">Learn More About Computer Vision</button>
+                        </div>
+                    </div>
+
+                    <div class="node" onclick="toggleBranch('robotics')">
+                        <span class="material-icons">android</span>
+                        Robotics
+                    </div>
+                    <div id="robotics" class="branch-content">
+                        <p>This combines AI with robots to do physical tasks.</p>
+                        <div class="interactive-element">
+                            <button onclick="loadIframe('robotics.html')">Learn More About Robotics</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Generative AI Node -->
+                <div class="node" onclick="toggleBranch('genai')">
+                    <span class="material-icons">brush</span>
+                    <strong>Generative AI (GenAI)</strong>
+                </div>
+                <div id="genai" class="branch-content">
+                    <p>Generative AI is the coolest! It's AI that can create new things like text, images, music, and even code.</p>
+
+                    <!-- Interactive Sentence Completion -->
+                    <div class="interactive-element">
+                        <p><strong>Sentence Completion:</strong> Type a word, and the GenAI will add the next word!</p>
+                        <div class="genai-input">
+                            <input type="text" id="genaiTextInput" placeholder="Type a word..." />
+                            <button onclick="generateSentence()">Continue Sentence</button>
+                        </div>
+                        <div id="genaiOutput" class="genai-output"></div>
+                    </div>
+
+                    <!-- Interactive Drawing Tool -->
+                    <div class="interactive-element">
+                        <p><strong>AI-Assisted Drawing:</strong> Draw a basic shape and see how GenAI can transform it!</p>
+                        <button onclick="startDrawing()">Start Drawing Tool</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="right-panel" id="iframePanel">
+            <iframe id="contentIframe" src="" width="100%" height="100%" style="border:none;"></iframe>
+        </div>
+    </div>
+
+    <script>
+        function toggleBranch(branchId) {
+            const branch = document.getElementById(branchId);
+            branch.style.display = branch.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function loadIframe(file) {
+            const iframePanel = document.getElementById('iframePanel');
+            const iframe = document.getElementById('contentIframe');
+            iframe.src = file;
+            iframePanel.classList.add('show');
+        }
+
+        // Placeholder for Sentence Completion Feature
+        function generateSentence() {
+            const input = document.getElementById('genaiTextInput').value;
+            const outputDiv = document.getElementById('genaiOutput');
+            if (input) {
+                outputDiv.innerText = `${input}... and then something amazing happens!`; // Placeholder response
+            } else {
+                outputDiv.innerText = "Please type a word to start the sentence.";
+            }
+        }
+
+        // Placeholder for Drawing Tool
+        function startDrawing() {
+            alert("Drawing tool would transform shapes here!"); // Placeholder for an AI-assisted drawing tool
+        }
+    </script>
+</body>
+</html>

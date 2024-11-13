@@ -1,0 +1,121 @@
+/* General styling */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f2f2f2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+/* Main box */
+.main-box {
+    background-color: #e0f7fa;
+    padding: 20px;
+    border-radius: 12px;
+    width: 320px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Start Game and Next Question button */
+#start-game-button,
+.next-button {
+    padding: 10px;
+    background-color: #00796b;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+    transition: background-color 0.3s;
+}
+
+#start-game-button:hover,
+.next-button:hover {
+    background-color: #004d40;
+}
+
+/* Try It Button */
+.try-button {
+    padding: 10px;
+    background-color: #ff7043;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+    transition: background-color 0.3s;
+    margin-right: 10px;
+}
+
+.try-button:hover {
+    background-color: #e64a19;
+}
+
+/* Question Box */
+.question-box {
+    margin-top: 20px;
+}
+
+.options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.option-button {
+    padding: 8px;
+    background-color: #80deea;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.option-button:hover {
+    background-color: #4dd0e1;
+}
+
+/* Result Box */
+.result-box {
+    margin-top: 20px;
+}
+
+/* Confetti */
+#confetti-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    display: none;
+}
+
+/* Feedback Messages */
+#result-message.correct {
+    font-size: 24px;
+    font-weight: bold;
+    color: #2e7d32;
+    background-color: #c8e6c9;
+    padding: 10px;
+    border-radius: 8px;
+    display: inline-block;
+    margin-top: 10px;
+}
+
+#result-message.incorrect {
+    font-size: 24px;
+    font-weight: bold;
+    color: #d32f2f;
+    background-color: #ffcdd2;
+    padding: 10px;
+    border-radius: 8px;
+    display: inline-block;
+    margin-top: 10px;
+}

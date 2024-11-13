@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Wordsmith App</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+  <style>
+    /* Main container styling */
+    body {
+      background-color: #f0f8ff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      overflow: hidden;
+    }
+
+    .main-container { 
+      width: 90%;
+      max-width: 800px;
+      max-height: 100vh;
+      overflow-y: auto;
+      padding: 20px;
+      background-color: #e3f2fd;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Generated Content Styling */
+    .generated-content-box {
+      background-color: #ffffff;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      margin-top: 20px;
+      text-align: center;
+      position: relative;
+    }
+
+    .image-container {
+      position: relative;
+      width: 100%;
+      max-width: 600px;
+      margin: auto;
+    }
+
+    #prompt-image {
+      width: 100%;
+      border-radius: 10px;
+    }
+
+    .title-overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-size: 2em;
+      font-weight: bold;
+      text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+      text-align: center;
+      padding: 10px;
+    }
+
+    /* Info Box Styling */
+    .info-box { 
+      width: 350px;
+      position: fixed;
+      right: 40px;
+      top: 80px;
+      padding: 20px;
+      border-radius: 10px; 
+      background: #f9f9f9;
+      box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+      border-left: 6px solid #1976d2;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      height: fit-content;
+    }
+
+    .info-box h6 { 
+      color: #1976d2; 
+      font-weight: bold; 
+      margin-top: 0;
+      font-size: 1.2em;
+    }
+
+    .info-box p {
+      color: #333;
+      font-size: 1.05em;
+      line-height: 1.6;
+      background-color: #eef4fb;
+      border-radius: 5px;
+      padding: 15px;
+      font-style: italic;
+    }
+
+    .info-box p::before {
+      content: "💡 ";
+      font-size: 1.3em;
+      vertical-align: middle;
+    }
+
+    /* Input Label Styling */
+    .input-field, .range-field {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+      width: 100%;
+    }
+
+    .field-container {
+      display: flex;
+      align-items: center;
+    }
+
+    .input-label {
+      font-weight: bold;
+      color: #1976d2;
+      min-width: 120px;
+      margin-right: 10px;
+    }
+
+    /* Example Prompts Radio Button Styling */
+    .example-prompts-container {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #eef4fb;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Main Content Section -->
+<div class="main-container">
+  <!-- Header and Prompt Section -->
+  <div class="container center-align">
+    <h4>Become a Wordsmith: Let's create a story</h4>
+  </div>
+
+  <!-- Genre Selection -->
+  <div class="input-field">
+    <div class="field-container">
+      <label class="input-label">Genre</label>
+      <select id="genre" onchange="updatePromptExamples(); showInfo('promptEngineering')">
+        <option value="" disabled selected>Choose Genre</option>
+        <option value="fantasy">Fantasy</option>
+        <option value="sci-fi">Sci-Fi</option>
+        <option value="historical">Historical Fiction</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Example Prompts Selection (Radio Buttons) -->
+  <div class="example-prompts-container" id="example-prompts-container" style="display: none;">
+    <label class="input-label">Example Prompts</label>
+    <div id="prompt-options"></div>
+  </div>
+
+  <!-- Tone Selection Slider -->
+  <div class="range-field">
+    <div class="field-container">
+      <label class="input-label">Tone</label>
+      <input type="range" id="tone" min="1" max="10" oninput="updateToneLabel(this.value); showInfo('tuning')" />
+      <label id="tone-label" style="margin-left: 10px;">Tone: Neutral</label>
+    </div>
+  </div>
+
+  <!-- Generate and Reset Buttons -->
+  <div class="center-align" style="margin-top: 20px;">
+    <button class="btn waves-effect waves-light" onclick="generateText()">Generate</button>
+    <button class="btn waves-effect waves-light" onclick="resetContent()">Reset</button>
+  </div>
+
+  <!-- Generated Content Display with Image and Title Overlay -->
+  <div class="generated-content-box" id="generated-content" style="display: none;">
+    <div class="image-container">
+      <img id="prompt-image" src="" alt="Prompt Image">
+      <div id="generated-title-overlay" class="title-overlay"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Info Box Positioned on the Right Side of the Screen -->
+<div id="info-box" class="info-box" style="display: none;">
+  <h6 id="info-title">Info</h6>
+  <p id="info-content">Hover over icons to learn more about LLM concepts!</p>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    M.AutoInit();
+  });
+
+  const prompts = {
+    fantasy: {
+      neutral: ["In a mystical forest, a hidden village is discovered.", "A young wanderer finds an enchanted forest.", "A brave explorer unveils a mystical forest."],
+      humorous: ["A wizard's spell backfires, turning his beard into spaghetti.", "A mischievous fairy hides villagers' left shoes.", "A dragon loses his fire-breathing powers."],
+      serious: ["A young warrior faces an ancient dragon.", "An elder wizard gives a mission to an apprentice.", "A kingdom faces doom as prophecies unfold."]
+    },
+    "sci-fi": {
+      neutral: ["A team of scientists discovers a portal to another dimension.", "A space explorer stumbles on a new planet.", "First contact with alien life brings mixed emotions."],
+      humorous: ["A quirky robot stars in a space reality show.", "An alien tries making cat videos.", "A spaceship AI plays jokes on the crew."],
+      serious: ["Humanity’s last ship makes a journey through uncharted space.", "A captain faces a moral dilemma.", "A colony's survival depends on gathering resources."]
+    },
+    historical: {
+      neutral: ["An apprentice learns an ancient secret in the Renaissance.", "A scholar finds a hidden library in a castle.", "A town witnesses a rare celestial event."],
+      humorous: ["A knight enters a jousting contest on a goat.", "A chef over-peppers the soup, causing chaos.", "A bard improvises hilariously after forgetting lyrics."],
+      serious: ["A soldier struggles during a pivotal moment in history.", "A village faces a harsh winter famine.", "A noble family makes difficult choices."]
+    }
+  };
+
+  const imageFiles = {
+    fantasy: {
+      neutral: "fantasy_neutral_mystical_forest_hidden_village.png",
+      humorous: "fantasy_humorous_wizard_spaghetti_beard.png",
+      serious: "fantasy_serious_warrior_dragon_fight.png"
+    },
+    "sci-fi": {
+      neutral: "scifi_neutral_space_explorer_new_planet.png",
+      humorous: "scifi_humorous_robot_space_reality_show.png",
+      serious: "scifi_serious_last_spaceship_uncharted_space.png"
+    },
+    historical: {
+      neutral: "historical_neutral_renaissance_apprentice.png",
+      humorous: "historical_humorous_knight_jousting_goat.png",
+      serious: "historical_serious_soldier_battle_struggle.png"
+    }
+  };
+
+  function updatePromptExamples() {
+    const genre = document.getElementById("genre").value;
+    const promptOptionsContainer = document.getElementById("prompt-options");
+    promptOptionsContainer.innerHTML = ''; // Clear previous options
+    const examplePromptContainer = document.getElementById("example-prompts-container");
+
+    if (prompts[genre]) {
+      const tones = ["neutral", "humorous", "serious"];
+      tones.forEach(tone => {
+        prompts[genre][tone].forEach((prompt, index) => {
+          const id = `${genre}-${tone}-${index}`;
+          promptOptionsContainer.innerHTML += `
+            <p>
+              <label>
+                <input name="prompt" type="radio" value="${prompt}" data-genre="${genre}" data-tone="${tone}" id="${id}" />
+                <span>${prompt}</span>
+              </label>
+            </p>`;
+        });
+      });
+      examplePromptContainer.style.display = 'block';
+    } else {
+      examplePromptContainer.style.display = 'none';
+    }
+  }
+
+  function showInfo(key) {
+    const infoContent = {
+      promptEngineering: ["Prompt Engineering", "Craft the right input for useful outputs. Choose genre and prompt to shape content."],
+      tuning: ["Tuning", "Adjust the tone to 'tune' the output style — serious, neutral, or humorous."]
+    };
+    const infoBox = document.getElementById("info-box");
+    const infoTitleElem = document.getElementById("info-title");
+    const infoContentElem = document.getElementById("info-content");
+
+    infoTitleElem.innerText = infoContent[key][0];
+    infoContentElem.innerHTML = infoContent[key][1].replace(/\n/g, "<br>");
+    infoBox.style.display = "block";
+  }
+
+  function updateToneLabel(value) {
+    const tones = ["Serious", "Neutral", "Humorous"];
+    let toneText = value < 4 ? tones[0] : value < 8 ? tones[1] : tones[2];
+    document.getElementById("tone-label").innerText = `Tone: ${toneText}`;
+  }
+
+  function generateText() {
+    const selectedPrompt = document.querySelector('input[name="prompt"]:checked');
+
+    if (!selectedPrompt) {
+      alert("Please select an example prompt.");
+      return;
+    }
+
+    const genre = selectedPrompt.getAttribute("data-genre");
+    const tone = selectedPrompt.getAttribute("data-tone");
+    const generatedContent = selectedPrompt.value;
+
+    const imageUrl = `images/${imageFiles[genre][tone]}`;
+    const promptImage = document.getElementById("prompt-image");
+    const titleOverlay = document.getElementById("generated-title-overlay");
+
+    if (generatedContent) {
+      promptImage.src = imageUrl;
+      promptImage.alt = `${genre} - ${tone} prompt image`;
+      titleOverlay.innerText = generatedContent;
+      document.getElementById("generated-content").style.display = "block";
+      showInfo('generation');
+    }
+  }
+
+  function resetContent() {
+    document.getElementById("generated-title-overlay").innerText = "";
+    document.getElementById("generated-content").style.display = "none";
+    document.getElementById("genre").selectedIndex = 0;
+    document.getElementById("example-prompts-container").style.display = "none";
+    document.getElementById("prompt-options").innerHTML = '';
+    document.getElementById("tone").value = 5;
+    updateToneLabel(5);
+    document.getElementById("info-box").style.display = "none";
+  }
+</script>
+</body>
+</html>

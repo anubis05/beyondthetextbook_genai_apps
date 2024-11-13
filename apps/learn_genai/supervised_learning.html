@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supervised Learning - Sort Images</title>
+    <style>
+        /* Basic styling for the page */
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        .description {
+            margin: 10px 0 20px;
+            max-width: 600px;
+            text-align: center;
+        }
+        .container {
+            display: flex;
+            gap: 20px;
+        }
+        .category {
+            width: 200px;
+            min-height: 250px;
+            padding: 10px;
+            background-color: #e0e0e0;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .category h2 {
+            font-size: 1.2em;
+            color: #555;
+        }
+        .image {
+            width: 100px;
+            height: 100px;
+            margin: 10px;
+            cursor: grab;
+            border-radius: 8px;
+        }
+        .feedback {
+            margin-top: 20px;
+            font-weight: bold;
+            color: #4CAF50;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Supervised Learning: Sort Images</h1>
+    <p class="description">Drag and drop the images of animals into their correct categories: <strong>Cats</strong> or <strong>Dogs</strong>.</p>
+    
+    <div class="container">
+        <!-- Drop Zone for Cats -->
+        <div id="catZone" class="category" ondrop="drop(event)" ondragover="allowDrop(event)">
+            <h2>Cats</h2>
+        </div>
+
+        <!-- Drop Zone for Dogs -->
+        <div id="dogZone" class="category" ondrop="drop(event)" ondragover="allowDrop(event)">
+            <h2>Dogs</h2>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Images to Drag -->
+        <img src="https://via.placeholder.com/100?text=Cat1" alt="Cat" class="image" draggable="true" ondragstart="drag(event)" data-category="cat" id="cat1">
+        <img src="https://via.placeholder.com/100?text=Dog1" alt="Dog" class="image" draggable="true" ondragstart="drag(event)" data-category="dog" id="dog1">
+        <img src="https://via.placeholder.com/100?text=Cat2" alt="Cat" class="image" draggable="true" ondragstart="drag(event)" data-category="cat" id="cat2">
+        <img src="https://via.placeholder.com/100?text=Dog2" alt="Dog" class="image" draggable="true" ondragstart="drag(event)" data-category="dog" id="dog2">
+    </div>
+
+    <div id="feedback" class="feedback">Great job! You sorted the images correctly!</div>
+
+    <script>
+        function allowDrop(event) {
+            event.preventDefault();
+        }
+
+        function drag(event) {
+            event.dataTransfer.setData("text", event.target.id);
+        }
+
+        function drop(event) {
+            event.preventDefault();
+            const data = event.dataTransfer.getData("text");
+            const draggedElement = document.getElementById(data);
+            const category = draggedElement.getAttribute("data-category");
+            const targetId = event.target.id;
+
+            // Check if the dropped image is in the correct category
+            if ((targetId === "catZone" && category === "cat") || (targetId === "dogZone" && category === "dog")) {
+                event.target.appendChild(draggedElement);
+                checkCompletion();
+            } else {
+                alert("Oops! Try again. This image doesn't belong here.");
+            }
+        }
+
+        function checkCompletion() {
+            const catZone = document.getElementById("catZone");
+            const dogZone = document.getElementById("dogZone");
+
+            // Check if all images are sorted correctly
+            if (catZone.children.length === 3 && dogZone.children.length === 3) {
+                document.getElementById("feedback").style.display = "block";
+            }
+        }
+    </script>
+
+</body>
+</html>

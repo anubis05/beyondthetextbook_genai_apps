@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generative AI Learning App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #e0f7fa;
+    }
+    .container {
+      background-color: #ffffff;
+      border-radius: 12px;
+      padding: 20px;
+      max-width: 600px;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+    h1 {
+      color: #0288d1;
+      margin-top: 10px;
+    }
+    .concepts {
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      margin: 20px 0;
+    }
+    .concept {
+      margin: 10px;
+      padding: 15px;
+      width: 120px;
+      background-color: #e1f5fe;
+      border: 1px solid #0288d1;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.3s, background-color 0.3s;
+      box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+      color: #0288d1;
+      font-weight: bold;
+    }
+    .concept:hover {
+      transform: scale(1.05);
+      background-color: #b3e5fc;
+    }
+    .description {
+      margin: 20px 0;
+      transition: opacity 0.5s;
+    }
+    .link {
+      display: block;
+      margin: 10px 0;
+      color: #0288d1;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .gan-visual {
+      display: none;
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 8px;
+      background-color: #f1f8e9;
+      box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .gan-animation {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      font-size: 18px;
+    }
+    .gan-character {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      color: white;
+      font-weight: bold;
+      animation: bounce 1s infinite alternate;
+    }
+    #generator {
+      background-color: #4CAF50;
+    }
+    #discriminator {
+      background-color: #ff6347;
+    }
+    button {
+      padding: 10px 20px;
+      margin-top: 10px;
+      border: none;
+      background-color: #0288d1;
+      color: white;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #0277bd;
+    }
+    @keyframes bounce {
+      from {
+        transform: translateY(0);
+      }
+      to {
+        transform: translateY(-10px);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Generative AI Learning</h1>
+    <p>Click on any concept to learn more!</p>
+
+    <div class="concepts">
+      <div class="concept" onclick="showConcept('nn')">Neural Networks</div>
+      <div class="concept" onclick="showConcept('data')">Training Data</div>
+      <div class="concept" onclick="showConcept('gan')">GANs</div>
+      <div class="concept" onclick="showConcept('vae')">VAEs</div>
+    </div>
+
+    <div id="description" class="description"></div>
+
+    <!-- GAN Interactive Animation -->
+    <div id="gan-visual" class="gan-visual">
+      <h2>GAN Visualization: A Friendly Competition</h2>
+      <div class="gan-animation">
+        <div id="generator" class="gan-character">Generator</div>
+        <p>VS</p>
+        <div id="discriminator" class="gan-character">Discriminator</div>
+      </div>
+      <button onclick="startGanAnimation()">Start Competition</button>
+    </div>
+  </div>
+
+  <script>
+    function showConcept(concept) {
+      const description = document.getElementById("description");
+      const ganVisual = document.getElementById("gan-visual");
+
+      // Reset GAN visualization initially
+      ganVisual.style.display = "none";
+
+      if (concept === "nn") {
+        description.innerHTML = `
+          <h2>Neural Networks</h2>
+          <p>Neural networks learn patterns in data to make predictions or guesses.</p>
+          <a class="link" href="https://quickdraw.withgoogle.com/" target="_blank">
+            Try drawing and see how the AI guesses!
+          </a>
+        `;
+      } else if (concept === "data") {
+        description.innerHTML = `
+          <h2>Training Data</h2>
+          <p>Training data is used to teach the AI. The AI learns by looking at many examples.</p>
+          <a class="link" href="https://quickdraw.withgoogle.com/" target="_blank">
+            Try Quick, Draw! to see how AI uses examples.
+          </a>
+        `;
+      } else if (concept === "gan") {
+        description.innerHTML = `
+          <h2>Generative Adversarial Networks (GANs)</h2>
+          <p>A Friendly Competition: GANs have two parts: a generator and a discriminator. The generator tries to create something new, while the discriminator tries to tell if it's real or fake. They keep competing, pushing each other to improve.</p>
+          <a class="link" href="https://thispersondoesnotexist.com/" target="_blank">
+            See GAN-created images of people who don't exist!
+          </a>
+        `;
+        ganVisual.style.display = "block";  // Show GAN visualization when GAN is clicked
+      } else if (concept === "vae") {
+        description.innerHTML = `
+          <h2>Variational Autoencoders (VAEs)</h2>
+          <p>Learning the Essence: VAEs try to understand the underlying structure of data. Imagine squeezing a complex idea into a simple code and then expanding it back out.</p>
+          <a class="link" href="https://quickdraw.withgoogle.com/" target="_blank">
+            Explore AI with Quick, Draw!
+          </a>
+        `;
+      }
+    }
+
+    function startGanAnimation() {
+      const generator = document.getElementById("generator");
+      const discriminator = document.getElementById("discriminator");
+
+      // Alternate messages as part of "competition"
+      generator.innerText = "Creating...";
+      discriminator.innerText = "Analyzing...";
+
+      setTimeout(() => {
+        generator.innerText = "New Image!";
+        discriminator.innerText = "Fake!";
+      }, 1000);
+
+      setTimeout(() => {
+        generator.innerText = "Realistic Image!";
+        discriminator.innerText = "Almost fooled!";
+      }, 2000);
+
+      setTimeout(() => {
+        generator.innerText = "Creating...";
+        discriminator.innerText = "Analyzing...";
+      }, 3000);
+
+      // Loop the animation after a few seconds
+      setTimeout(startGanAnimation, 4000);
+    }
+  </script>
+
+</body>
+</html>
